@@ -6,7 +6,7 @@
 /*   By: rmouhoub <rmouhoub@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 11:25:02 by rmouhoub          #+#    #+#             */
-/*   Updated: 2023/11/10 17:37:36 by rmouhoub         ###   ########.fr       */
+/*   Updated: 2023/11/20 16:19:51 by rmouhoub         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,13 @@
 #include <pthread.h>
 typedef struct s_philo
 {
-    pthread_t id;
+    int id;
+    pthread_t thread;
     int time_to_eat;
     int time_to_sleep;
     int time_to_die;
     pthread_mutex_t	fork;
-    t_philo *next_philo;
+    struct s_philo *next_philo;
     //pthread_mutex_t my_time;
 }               t_philo;
 

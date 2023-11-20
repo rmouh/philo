@@ -6,7 +6,7 @@
 /*   By: rmouhoub <rmouhoub@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 11:22:45 by rmouhoub          #+#    #+#             */
-/*   Updated: 2023/11/10 17:49:05 by rmouhoub         ###   ########.fr       */
+/*   Updated: 2023/11/20 16:40:43 by rmouhoub         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void free_data(t_general *data)
 }
 void init_general(t_general *data, int size, char *argv[])
 {
-    data = malloc(sizeof(t_general));
+    // data = malloc(sizeof(t_general));
     data->tab = parse_input(argv, size);
     //if parse faild has to free data 
     data->nb_philo = size;
@@ -85,13 +85,17 @@ int    create_philos(t_general *data)
 {
     int i;
     
-    i = 1;
-    data->philo_tab = malloc(sizeof(t_philo)*data->nb_philo);
+    i = 0;
+    data->philo_tab = malloc(sizeof(t_philo )* data->nb_philo);
     if (!data->philo_tab)
         return(0);//have to free 
-    while (i <= data->nb_philo)
+    printf("%i\n", data->nb_philo);
+    while (i < data->nb_philo)
     {
-        data->philo_tab[i].id = i;
+        // data->philo_tab[i] = malloc(sizeof(t_philo));
+        printf("i = %i\n", i);
+        // prin
+        data->philo_tab[i].id = i+1;
         data->philo_tab[i].time_to_die = data->tab[1];
         data->philo_tab[i].time_to_eat = data->tab[2];
         data->philo_tab[i].time_to_sleep = data->tab[3];
@@ -100,9 +104,8 @@ int    create_philos(t_general *data)
         else 
             data->philo_tab[i].next_philo = &(data->philo_tab[1]);
         if (pthread_mutex_init(&data->philo_tab[i].fork, NULL) != 0)
-            //return faild and free 
+            return 0; 
         //if (pthread_mutex_init())
-        
         i++;
     }
     return(1);
@@ -121,11 +124,13 @@ int    create_philos(t_general *data)
 void    *my_fonction(void *arg)
 {
     t_philo *args;
-    
+    write(2, "philo routine\n", 14);
     args = (t_philo *)arg;
+    if ()
     pthread_mutex_lock(&(args->fork));
     pthread_mutex_lock(&(args->next_philo->fork));
-    
+    exit(1);
+    return NULL;
 }
 // void init_philo(t_general *data)
 // {
@@ -143,25 +148,32 @@ void    *my_fonction(void *arg)
     I create my general data
     I create my philo 
 */
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int i = 0;
-    t_general   *data;
+    t_general   data;
+    // data = malloc(sizeof(t_general));
     
-    data = NULL;
+    // data = NULL;
     //data = malloc(sizeof(t_general));
     //data->tab = parse_input(argv, argc-1);
     //print_tab(data->tab, argc-1);
-    init_general(data, argc-1, argv);
-    // create_philos(data);
-    // while(i < data->nb_philo)
-    // {
-    //     if (pthread_create(&data->philo_tab[i].id, NULL, &my_fonction, &data->philo_tab[i]) != 0)
-	// 		break ;
-	// 	i++;
-    // }
-    //have to destroy my mutex     pthread_mutex_destroy(&myMutex);
-    //have to join the threads 
-    free_data(data);
+    init_general(&data, argc-1, argv);
+    printf("create philo = %i\n", create_philos(&data));
+    while(i < data.nb_philo)
+    {
+        if (pthread_create(&data.philo_tab[i].thread, NULL, &my_fonction, &data.philo_tab[i]) != 0)
+			break ;
+		i++;
+    }
+    for (int i = 0; i < data.nb_philo; i++)
+    {
+        pthread_join(data.philo_tab[i].thread, NULL);
+        /* code */
+    }
     
+    //have to destroy my mutex     pthread_mutex_destroy(&myMutex);
+    // //have to join the threads 
+    // free_data(data);
+    return 1;
 }
