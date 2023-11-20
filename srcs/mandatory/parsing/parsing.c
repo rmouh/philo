@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "philo.h"
+#include <stdio.h>
+#include <sys/time.h>
 
 int is_not_integer(char *str)
 {
@@ -42,7 +44,9 @@ int *parse_input(char *argv[], int size)
     i = 0;
     if (size != 4)
         return(write(2, "ERROR\n", 6), NULL);
-    tab = (int*)ft_callloc_tab(size);    
+    tab = (int*)ft_callloc_tab(size); 
+    if (!tab)
+        return NULL;   
     while(i < size)
     {
         if(is_not_integer(argv[i+1]))
@@ -72,33 +76,48 @@ void free_data(t_general *data)
 }
 void init_general(t_general *data, int size, char *argv[])
 {
+    struct timeval tv;
     data = malloc(sizeof(t_general));
+    if(!data)
+        //return 
     data->tab = parse_input(argv, size);
+    if (data->tab != NULL)
     //if parse faild has to free data 
-    data->nb_philo = size;
-    data->time_to_die = data->tab[1];
-    data->time_to_eat = data->tab[2];
-    data->time_to_sleep = data->tab[3];
-}
+    {
+        data->nb_philo = data->tab[0];
+        data->time_to_die = data->tab[1];
+        data->time_to_eat = data->tab[2];
+        data->time_to_sleep = data->tab[3];
+        if (data->time_to_die <= data->time_to_eat + data->time_to_sleep)   
+            //return(NULL, ft_printf("No enough time te eat and sleep !! add me some more\n"));
+        if (gettimeofday(&tv, NULL)!= 0)
+            //return(NULL, ft_printf("timing wrong \n"));
+        // data->general_time = 
 
+    }
+}
+/*
+    creating philos and initialising their data
+    creating mutex for fork 
+*/
 int    create_philos(t_general *data)
 {
     int i;
     
-    i = 1;
+    i = 0;
     data->philo_tab = malloc(sizeof(t_philo)*data->nb_philo);
     if (!data->philo_tab)
         return(0);//have to free 
     while (i <= data->nb_philo)
     {
-        data->philo_tab[i].id = i;
+        data->philo_tab[i].id = i+1;
         data->philo_tab[i].time_to_die = data->tab[1];
         data->philo_tab[i].time_to_eat = data->tab[2];
         data->philo_tab[i].time_to_sleep = data->tab[3];
-        if (i != data->nb_philo)
+        if (i < data->nb_philo - 1)
             data->philo_tab[i].next_philo = &(data->philo_tab[i + 1]);
         else 
-            data->philo_tab[i].next_philo = &(data->philo_tab[1]);
+            data->philo_tab[i].next_philo = &(data->philo_tab[0]);
         if (pthread_mutex_init(&data->philo_tab[i].fork, NULL) != 0)
             //return faild and free 
         //if (pthread_mutex_init())
@@ -149,17 +168,19 @@ void main(int argc, char *argv[])
     t_general   *data;
     
     data = NULL;
+    //TODO : handal the number of args 
+
     //data = malloc(sizeof(t_general));
     //data->tab = parse_input(argv, argc-1);
     //print_tab(data->tab, argc-1);
     init_general(data, argc-1, argv);
-    // create_philos(data);
-    // while(i < data->nb_philo)
-    // {
-    //     if (pthread_create(&data->philo_tab[i].id, NULL, &my_fonction, &data->philo_tab[i]) != 0)
-	// 		break ;
-	// 	i++;
-    // }
+    create_philos(data);
+    while(i < data->nb_philo)
+    {
+        if (pthread_create(&data->philo_tab[i].id, NULL, &my_fonction, &data->philo_tab[i]) != 0)
+			break ;
+		i++;
+    }
     //have to destroy my mutex     pthread_mutex_destroy(&myMutex);
     //have to join the threads 
     free_data(data);

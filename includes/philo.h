@@ -37,6 +37,7 @@ typedef struct s_general
     int time_to_eat;
     int time_to_sleep;
     int time_to_die;
+    int general_time;
     t_philo *philo_tab;
     
 }               t_general;
