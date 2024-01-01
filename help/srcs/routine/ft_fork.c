@@ -15,12 +15,12 @@
 int	ft_fork(t_philo *philo)
 {
 	ft_lock_forks(philo);
-	if (ft_update_time(philo) != 0)
+	if (ft_update_time(philo) != 0)//
 	{
 		ft_unlock_forks(philo);
 		return (-1);
 	}
-	if (ft_check_status(philo) != 0)
+	if (ft_check_status(philo) != 0)//si il a fini 
 	{
 		ft_unlock_forks(philo);
 		return (-1);

@@ -22,6 +22,11 @@ DIR_PARSING		=	parsing
 
 
 SRCS_NAMES 		= 	$(DIR_PARSING)/parsing.c \
+					$(DIR_PARSING)/routine.c\
+					$(DIR_PARSING)/eat.c\
+					$(DIR_PARSING)/sleep.c\
+					$(DIR_PARSING)/fork.c\
+					$(DIR_PARSING)/watcher.c\
 					
 					
 
@@ -41,7 +46,7 @@ all				:	${NAME}
 $(NAME): $(OBJS)
 	make -C libft
 	mv libft/libft.a .
-	$(CC) -g3 $(OBJS) $(CFLAGS) ${HEAD} ${LIBFT}  -o $(NAME)
+	$(CC) -g3 $(OBJS)  ${HEAD} ${LIBFT}  -o $(NAME)
 	@echo "\033[34;5mPhilo\033[0m"
 
 $(DIR_OBJS):
@@ -50,7 +55,7 @@ $(DIR_OBJS):
 
 	
 $(DIR_OBJS)/%.o: $(DIR_SRCS)/%.c | $(DIR_OBJS)
-	$(CC) $(CFLAGS) -c $< -o $@ $(HEAD)
+	$(CC)  -c $< -o $@ $(HEAD)
 
 
 
