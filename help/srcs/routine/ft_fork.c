@@ -12,22 +12,22 @@
 
 #include "includes/ft_fork.h"
 
-int	ft_fork(t_philo *philo)
-{
-	ft_lock_forks(philo);
-	if (ft_update_time(philo) != 0)//
-	{
-		ft_unlock_forks(philo);
-		return (-1);
-	}
-	if (ft_check_status(philo) != 0)//si il a fini 
-	{
-		ft_unlock_forks(philo);
-		return (-1);
-	}
-	printf("[%7dms] %d has taken fork!\n", ft_get_time(philo), philo->num);
-	return (0);
-}
+// int	ft_fork(t_philo *philo)
+// {
+// 	ft_lock_forks(philo);
+// 	if (ft_update_time(philo) != 0)//
+// 	{
+// 		ft_unlock_forks(philo);
+// 		return (-1);
+// 	}
+// 	if (ft_check_status(philo) != 0)//si il a fini 
+// 	{
+// 		ft_unlock_forks(philo);
+// 		return (-1);
+// 	}
+// 	printf("[%7dms] %d has taken fork!\n", ft_get_time(philo), philo->num);
+// 	return (0);
+// }
 
 void	ft_lock_forks(t_philo *philo)
 {

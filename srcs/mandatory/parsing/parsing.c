@@ -17,10 +17,10 @@
 
 long int	gettime(void)
 {
-	struct timeval	current;
+	struct timeval	time;
 
-	gettimeofday(&current, NULL);
-	return ((current.tv_sec * 1000) + (current.tv_usec / 1000));
+	gettimeofday(&time, NULL);
+	return ((time.tv_sec * (unsigned long)1000) + (time.tv_usec / 1000));
 }
 
 int is_not_integer(char *str)
@@ -84,29 +84,29 @@ int *parse_input(char *argv[], int size)
 //     }
 //     printf("\n");
 // }
-void    print_philo(t_philo philo)
-{
-    ft_printf("philo N %d | time to eat  %d | time to sleep  %d | time to die  %d ", philo.id, philo.time_to_eat, philo.time_to_sleep, philo.time_to_die);
-}
-void    print_tab(t_general data)
-{
-    int i;
-    t_philo *tab = data.philo_tab;
+// void    print_philo(t_philo philo)
+// {
+//     ft_printf("philo N %d | time to eat  %d | time to sleep  %d | time to die  %d ", philo.id, philo.time_to_eat, philo.time_to_sleep, philo.time_to_die);
+// }
+// void    print_tab(t_general data)
+// {
+//     int i;
+//     t_philo *tab = data.philo_tab;
     
-    i = 0;
-    ft_printf("nb philos %d  \n", data.nb_philo);
-    while (i < data.nb_philo)
-    {
-        print_philo( tab[i++]);
-        printf("\n");
-        // ft_printf("%d  ", tab[i]);
-        // i++;
-    }
-    // ft_printf("data philo N %d | time to eat  %d | time to sleep  %d | time to die  %d ", tab[1].id, tab[1].data->time_to_eat, tab[1].data->time_to_sleep,tab[1].data->time_to_die);
-    printf("nb of meals %d\n",tab[1].data->nb_of_meals);
-    printf("\n");
+//     i = 0;
+//     ft_printf("nb philos %d  \n", data.nb_philo);
+//     while (i < data.nb_philo)
+//     {
+//         print_philo( tab[i++]);
+//         printf("\n");
+//         // ft_printf("%d  ", tab[i]);
+//         // i++;
+//     }
+//     // ft_printf("data philo N %d | time to eat  %d | time to sleep  %d | time to die  %d ", tab[1].id, tab[1].data->time_to_eat, tab[1].data->time_to_sleep,tab[1].data->time_to_die);
+//     printf("nb of meals %d\n",tab[1].data->nb_of_meals);
+//     printf("\n");
     
-}
+// }
 
 void free_data(t_general *data)
 {
@@ -115,28 +115,18 @@ void free_data(t_general *data)
 }
 void init_general(t_general *data, int size, char *argv[])
 {
-    // data = malloc(sizeof(t_general));
-    // if(!data)
-        //return 
     data->tab = parse_input(argv, size);
-    //if parse faild has to free data 
     if (data->tab != NULL)
     {
+        data->general_time = gettime();
         data->nb_philo = data->tab[0];
-        printf("nb philo = %i\n", data->nb_philo);
         data->time_to_die = data->tab[1];
-        // printf("time to die = %i\n", data->time_to_die);
         data->time_to_eat = data->tab[2];
-        // printf("time to eat = %i\n", data->time_to_eat);
         data->time_to_sleep = data->tab[3];
         data->nb_of_meals = data->tab[4];
-        // printf("time to sleep = %i\n", data->time_to_sleep);
+        data->exit_var = 0;
         pthread_mutex_init(&data->print, NULL);
-        pthread_mutex_init(&data->exit, NULL);  
-            // return 0; 
-            //return(NULL, ft_printf("No enough time te eat and sleep !! add me some more\n"));
-        // data->general_time = 
-
+        pthread_mutex_init(&data->exit, NULL);
     }
 }
 /*
@@ -154,14 +144,11 @@ int    create_philos(t_general *data)
     printf("%i\n", data->nb_philo);
     while (i < data->nb_philo)
     {
-        // data->philo_tab[i] = malloc(sizeof(t_philo));
         printf("i = %i\n", i);
         data->philo_tab[i].data = data;
         data->philo_tab[i].id = i+1;
         data->philo_tab[i].exit_code = 0;
-        data->philo_tab[i].time_to_die = 0;
-        data->philo_tab[i].time_to_eat = 0;
-        data->philo_tab[i].time_to_sleep = 0;
+        data->philo_tab[i].last_time_meal = 0;
         data->philo_tab[i].current_time = data->general_time;
         data->philo_tab[i].current_meal = 0;
         if (i < data->nb_philo - 1)
@@ -229,33 +216,23 @@ int main(int argc, char *argv[])
     int i = 0;
     t_general   *data;
     data = malloc(sizeof(t_general));
-    
-    // data = NULL;
-    //data = malloc(sizeof(t_general));
-    //data->tab = parse_input(argv,
-    //pthread_mutex_t my argc-1);
     init_general(data, argc-1, argv);
     create_philos(data);
+    printf("general time = %li\n", gettime());
     // print_tab(*data);
-    // print_tab(data);
-    data->general_time = gettime();
-    printf("time = %li\n", data->general_time);
     while(i < data->nb_philo)
     {
         if (pthread_create(&data->philo_tab[i].thread, NULL, &my_fonction, &data->philo_tab[i]) != 0)
 			break ;
 		i++;
     }
-    //    for (int i = 0; i < data->nb_philo; i++)
-    //     pthread_join(data->philo_tab[i].thread, NULL);  
-    ft_watch(data);
-    ft_close_threads(data);
-    // printf("finiiiiiiiiiiiiii   \n  ");
-
-    
-    //have to destroy my mutex     pthread_mutex_destroy(&myMutex);
-    // //have to join the threads 
-    // free_data(data);
+    if (data->nb_philo != 1)
+    {
+        ft_watch(data);
+        ft_close_threads(data);
+        printf("finiiiiiiiiiiiiii   \n  ");
+    }else 
+        pthread_join(data->philo_tab[0].thread, NULL);  
     return 1;
 }
 /*

@@ -25,10 +25,10 @@ typedef struct s_philo
 {
     int id;
     pthread_t thread;
-    int time_to_eat;
-    int time_to_sleep;
-    int time_to_die;
-    int current_time;
+    int last_time_meal;
+    // int time_to_sleep;
+    // int time_to_die;
+    long int current_time;
     int current_meal;
     int exit_code;
     struct timeval	tv;
@@ -50,6 +50,7 @@ typedef struct t_general
     int time_to_sleep;
     int time_to_die;
     int nb_of_meals;
+    int exit_var;
     pthread_mutex_t print;
     pthread_mutex_t exit;
     int time_error;
@@ -68,13 +69,13 @@ long int	gettime(void);
 */
 void    ft_update_time_last_meal(t_philo *philo);
 int     ft_eat(t_philo *philo);
-
+void	philo_print(char *msg, t_philo *philo, int unlock);
 int     ft_sleep(t_philo *philo);
 
-void    ft_lock_forks(t_philo *philo);
+long int    ft_lock_forks(t_philo *philo);
 void    ft_unlock_forks(t_philo *philo);
 int     ft_check_status(t_philo *philo);
-int     take_fork (t_philo *philo);
+long int     take_fork (t_philo *philo);
 
 int     ft_get_time(t_philo *philo);
 void    *my_fonction(void *arg);
@@ -85,6 +86,6 @@ void	ft_handle_error_time(t_general *data);
 int	ft_close_threads( t_general *data);
 void ft_watch(t_general *data);
 void	ft_set_all_statuses_2(t_general *data);
-int	ft_check_death(t_general *data,  int time);
+int	ft_check_death(t_general *data,  long int time);
 int	ft_is_game_finished(t_general *data);
 #endif

@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "ft_error.h": "c"
+        "ft_error.h": "c",
+        "stdio.h": "c"
     }
 }

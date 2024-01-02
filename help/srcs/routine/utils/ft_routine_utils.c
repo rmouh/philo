@@ -30,12 +30,12 @@ int	ft_start_schedule(t_philo *philo)
 		return (-1);
 	}
 	printf("%d", (philo->time_eat - philo->time_curr) * 1000);
-	usleep((philo->time_eat - philo->time_curr) * 1000);
+	// usleep((philo->time_eat - philo->time_curr) * 1000);
 	if (philo->num % 2 == 0)
 		usleep(philo->rules->time_sleep * 1000);
-	if (philo->rules->num_philo % 2 == 1)
-		if (philo->num == philo->rules->num_philo)
-			usleep(1000);
+	// if (philo->rules->num_philo % 2 == 1)
+	// 	if (philo->num == philo->rules->num_philo)
+	// 		usleep(1000);
 	return (0);
 }
 

@@ -10,28 +10,18 @@ int	ft_get_time(t_philo *philo)
 
 int	ft_update_time(t_philo *philo)
 {
-	// philo->current_time = -1;
-	if (gettimeofday(&philo->tv, NULL) != 0)
-		return (-2);
-	philo->current_time = (philo->tv.tv_sec * 1000) + (philo->tv.tv_usec / 1000);
+	philo->current_time = gettime();
 	return (0);
 }
 
 int	ft_start_schedule(t_philo *philo)
 {
-	if (ft_update_time(philo) != 0)
-	{
-		printf("TIME ERROR\n");
-		philo->exit_code = -2;
-		return (-1);
-	}
-	// printf("%d", (philo->current_meal - philo->current_time) * 1000);
-	// usleep((philo->current_meal - philo->current_time) * 1000);
+	ft_update_time(philo);
 	if (philo->id % 2 == 0)
 		usleep(philo->data->time_to_sleep * 1000);
-	if (philo->data->nb_philo % 2 == 1)
-		if (philo->id == philo->data->nb_philo)
-			usleep(1000);
+	// if (philo->data->nb_philo % 2 == 1)
+	// 	if (philo->id == philo->data->nb_philo)
+	// 		usleep(1000);
 	return (0);
 }
 
@@ -48,24 +38,43 @@ void	ft_handle_error_time(t_general *data)
 // 	data->exit_code = 0;
 // 	pthread_mutex_unlock(&philo->exit);
 // }
+void	philo_printone(char *msg, t_philo *philo, int unlock)
+{
+    long int time;
+
+    time  =  philo->data->time_to_die;
+	philo->current_time = time;
+	pthread_mutex_lock(&philo->data->print);
+	printf("%ld [%d] %s\n", time, philo->id, msg);
+	if (unlock)
+		pthread_mutex_unlock(&philo->data->print);
+	// free(timestamp);
+}
+
+void	ft_handle_one_philo(t_philo *philo)
+{
+	usleep(philo->data->time_to_die * 1000 + 1000);
+	philo_printone(" died ", philo,1);
+}
 void    *my_fonction(void *arg)
 {
     t_philo *philo ;
-    // write(2, "philo routine\n", 14);
+	long int y;
     philo  = (t_philo *)arg;
-	// printf("philo %d\n", philo->id);
     if (ft_start_schedule(philo) != 0)
-		{
-        return NULL;
-		}
-		// return (ft_handle_error(philo), NULL);
- 
+        return NULL; 
+	if(philo->data->nb_philo  == 1)
+		return(ft_handle_one_philo(philo), NULL);
+	
     while (1)
-    {
-        if (take_fork(philo) == -1)
+    {	
+		y=take_fork(philo);
+        if ((y== -1))
             break;
-        if(ft_eat(philo) == -1)
-            break;
+		philo->current_time = y;
+        // if(ft_eat(philo) == -1)
+        //     break;
+		// y= 
         if(ft_sleep(philo) == -1)
             break;
         

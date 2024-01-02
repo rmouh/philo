@@ -14,10 +14,10 @@
 
 int	ft_update_time(t_philo *philo)
 {
-	philo->time_curr = -1;
-	if (gettimeofday(&philo->tv, NULL) != 0)
-		return (-2);
-	philo->time_curr = (philo->tv.tv_sec * 1000) + (philo->tv.tv_usec / 1000);
+	struct timeval	time;
+
+	gettimeofday(&time, NULL);
+	philo->time_curr = (time.tv_sec * (unsigned long)1000) + (time.tv_usec / 1000);
 	return (0);
 }
 
